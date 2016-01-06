@@ -12,4 +12,4 @@ Example:
 [Livestreamer]: <https://github.com/chrippa/livestreamer>
 [TwitchAPI]:<https://github.com/justintv/Twitch-API>
 [qLiveStreamer]: <https://github.com/Hyperz/qLiveStreamer>
-![alt tag](https://github.com/pomidi/TwitchLiveStreamerApp/blob/master/AppScreenshot.png)
+![alt tag](https://github.com/pomidi/TwitchLivestreamer/blob/master/README.md)

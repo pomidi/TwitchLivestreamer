@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
    //timer settings
    m_activateTimer = new QTimer(this);
-   m_activateTimer->setInterval(10*1000);
+   m_activateTimer->setInterval(60*1000);
    m_activateTimer->setSingleShot(false);
    m_activateTimer->start();
 
