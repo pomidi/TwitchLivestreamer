@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>add.png</file>
+        <file>offline.png</file>
+        <file>online.jpg</file>
+        <file>play.png</file>
+        <file>refresh.png</file>
+        <file>remove.png</file>
+    </qresource>
+</RCC>
