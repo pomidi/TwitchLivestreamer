@@ -23,15 +23,25 @@ public:
     ~MainWindow();
 private:
     void addBookmark(const Bookmark &bookmark, bool status);
+
     void removeBookmark(int index);
+
     void watchStream(const QUrl& url, const QString &player, const QString &quality);
+
     DataType DataTypeDecetection(const QJsonObject& jsonObject);
+
     void RefreshStreams(QString links);
+
     void UpdateSubscriptionList(const QJsonArray& array);
+
     void UpdateStreamStatus(QJsonValue& StatusValue);
+
     void UpdateViewerStatus(QJsonValue &ViewerValue, QJsonValue &StatusValue);
+
     QUrl getStreamerName();
+
     void SortItems();
+
 private slots:
     void on_AddButton_clicked();
 
@@ -50,11 +60,17 @@ private slots:
     void on_checkBox_clicked(bool checked);
 
 private:
+
     Ui::TwitchStreamerApp *ui;
+
     Download * m_download;
+
     QList<Bookmark> m_bookmarks;
+
     QList<QString> m_onlinePlayers_previous;
+
     QList<QString> m_onlinePlayers_now;
+
     QTimer * m_activateTimer;
 };
 
