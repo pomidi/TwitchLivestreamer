@@ -34,7 +34,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_AddButton_clicked()
 {
-     bool ok = false;
+    bool ok = false;
     QString txt = QInputDialog::getText(this, "Add Stream", "Stream URL (i.e. http://twitch.tv/some-stream):", QLineEdit::Normal, "http://", &ok);
     if (ok && !txt.isEmpty())
     {
@@ -272,4 +272,10 @@ void MainWindow::on_checkBox_clicked(bool checked)
               item->setHidden(checked);
           }
      }
+}
+
+void MainWindow::on_BrowseButton_clicked()
+{
+    QString  fileName = QFileDialog::getOpenFileName(this);
+    ui->PathFile->setText(fileName);
 }

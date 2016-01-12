@@ -59,6 +59,8 @@ private slots:
 
     void on_checkBox_clicked(bool checked);
 
+    void on_BrowseButton_clicked();
+
 private:
 
     Ui::TwitchStreamerApp *ui;

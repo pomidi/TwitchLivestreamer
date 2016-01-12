@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>744</width>
-    <height>578</height>
+    <height>514</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -131,6 +131,13 @@
        <widget class="QLineEdit" name="PathFile">
         <property name="text">
          <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="BrowseButton">
+        <property name="text">
+         <string>Browse</string>
         </property>
        </widget>
       </item>
