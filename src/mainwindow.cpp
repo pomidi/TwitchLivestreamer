@@ -89,11 +89,25 @@ void MainWindow::removeBookmark(int index)
 void MainWindow::on_WatchButotn_clicked()
 {
     QModelIndexList indexes = ui->treeWidget->selectionModel()->selectedRows();
+    if(indexes.isEmpty())
+    {
+        QMessageBox msgBox;
+        msgBox.setText("First select a channel to watch!");
+        msgBox.exec();
+        return;
+    }
     QVariant variant = indexes[0].data(Qt::DisplayRole);
     QString PlayerName = variant.toString();
     QString player = ui->PathFile->text();
     QString quality = ui->QualityBox->currentText();
     QUrl url = QUrl("http://twitch.tv/"+PlayerName);
+    if(player.isEmpty())
+    {
+        QMessageBox msgBox;
+        msgBox.setText("No player selected!");
+        msgBox.exec();
+        return;
+    }
     watchStream(url, player, quality);
 }
 
