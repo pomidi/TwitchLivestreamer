@@ -114,7 +114,6 @@ void MainWindow::on_RefreshButton_clicked()
     //"https://api.twitch.tv/kraken/users/0midd/follows/channels"
     QString link_1 = "https://api.twitch.tv/kraken/users/";
     QString player;
-    LoadSettings();
     if(m_username.isEmpty())
     {
         player = QInputDialog::getText(this, "Add User", "Your Twitch Username",QLineEdit::Normal,"");
