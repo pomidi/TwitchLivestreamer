@@ -14,7 +14,6 @@ MainWindow::MainWindow(QWidget *parent) :
    m_activateTimer->start();
 
    ui->setupUi(this);
-
 #ifdef WIN32
    ui->PathFile->setText("C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe");
 #else
@@ -36,6 +35,8 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     SaveSettings();
+    delete m_download;
+    delete m_activateTimer;
     delete ui;
 }
 
