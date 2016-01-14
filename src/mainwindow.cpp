@@ -1,19 +1,27 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "qglobal.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::TwitchStreamerApp),
-    m_download(new Download(this))
+    m_download(new Download(this)),
+    m_activateTimer(new QTimer(this))
 {
    //timer settings
-   m_activateTimer = new QTimer(this);
    m_activateTimer->setInterval(60*1000);
    m_activateTimer->setSingleShot(false);
    m_activateTimer->start();
 
    ui->setupUi(this);
+
+#ifdef WIN32
    ui->PathFile->setText("C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe");
+#else
+   ui->PathFile->setText("vlc");
+#endif
+
+   LoadSettings();
    m_onlinePlayers_previous.clear();
    m_onlinePlayers_now.clear();
 
@@ -23,12 +31,11 @@ MainWindow::MainWindow(QWidget *parent) :
    connect(ui->actionRemove,SIGNAL(triggered()),this,SLOT(on_RemoveButton_pressed()));
    connect(ui->treeWidget,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(on_WatchButotn_clicked()));
    connect(m_activateTimer,SIGNAL(timeout()),this,SLOT(on_UpdateStatusButton_clicked()));
-
-
 }
 
 MainWindow::~MainWindow()
 {
+    SaveSettings();
     delete ui;
 }
 
@@ -42,27 +49,20 @@ void MainWindow::on_AddButton_clicked()
         foreach (Bookmark bookmark, m_bookmarks)
             if (bookmark == newBookmark)
                 return;
-        addBookmark(newBookmark,false);
+        addBookmark(newBookmark);
     }
 }
 
-void MainWindow::addBookmark(const Bookmark &bookmark,bool status)
+void MainWindow::addBookmark(const Bookmark &bookmark)
 {
     m_bookmarks << bookmark;
     QStringList lst;
-    if(status)
-    {
-        lst << bookmark.streamName() << "Live!";
-    }
-    else
-    {
-        lst << bookmark.streamName() << "Offline";
-    }
+    lst << bookmark.streamName() << "Offline";
 
     QTreeWidgetItem * item = new QTreeWidgetItem((QTreeWidget*)0, lst);
     item->setToolTip(0, bookmark.url().toString());
     item->setToolTip(1, bookmark.url().toString());
-    item->setIcon(1,bookmark.StatusIcon(status));
+    item->setIcon(1,bookmark.StatusIcon(false));
     item->setText(2,"-");
     ui->treeWidget->addTopLevelItem(item);
 }
@@ -101,17 +101,34 @@ void MainWindow::watchStream(const QUrl& url, const QString &player, const QStri
 {
     QStringList args;
     args << url.toString() << quality << "--player" << player;
-    QProcess::startDetached("livestreamer", args);
+    if(!QProcess::startDetached("livestreamer", args))
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Could not find livestreamer on your computer.\n");
+        msgBox.exec();
+    }
 }
 
 void MainWindow::on_RefreshButton_clicked()
 {
     //"https://api.twitch.tv/kraken/users/0midd/follows/channels"
     QString link_1 = "https://api.twitch.tv/kraken/users/";
-    QString player = QInputDialog::getText(this, "Add User", "Your Twitch Username",QLineEdit::Normal,"0midd");
+    QString player;
+    LoadSettings();
+    if(m_username.isEmpty())
+    {
+        player = QInputDialog::getText(this, "Add User", "Your Twitch Username",QLineEdit::Normal,"");
+    }
+    else
+    {
+        player = QInputDialog::getText(this, "Add User", "Your Twitch Username",QLineEdit::Normal,m_username);
+    }
+
     QString link_2 = "/follows/channels";
+    m_username = player;
     QUrl url(link_1+player+link_2);
     m_download->DownloadFromUrl(url);
+
 }
 
 void MainWindow::capture()
@@ -239,7 +256,7 @@ void MainWindow::RefreshStreams(QString link)
         foreach (Bookmark bookmark, m_bookmarks)
             if (bookmark == newBookmark)
                 return;
-        addBookmark(newBookmark,false);
+        addBookmark(newBookmark);
 }
 
 void MainWindow::on_UpdateStatusButton_clicked()
@@ -278,4 +295,55 @@ void MainWindow::on_BrowseButton_clicked()
 {
     QString  fileName = QFileDialog::getOpenFileName(this);
     ui->PathFile->setText(fileName);
+    if(fileName == "")
+    {
+#ifdef WIN32
+        ui->PathFile->setText("C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe");
+#else
+        ui->PathFile->setText("vlc");
+#endif
+    }
+}
+
+void MainWindow::SaveSettings()
+{
+
+    QSettings setting(QSettings::IniFormat,QSettings::UserScope,"TwitchLivestreamer");
+    setting.remove("bookmarks");
+    setting.remove("VLCPath");
+    setting.remove("username");
+    setting.setValue("VLCPath",ui->PathFile->text());
+    setting.setValue("username",m_username);
+    m_urls.clear();
+    foreach(Bookmark bookmark,m_bookmarks){
+        if(!m_urls.contains( bookmark.url().toString()))
+            m_urls << bookmark.url().toString();
+    }
+    setting.setValue("bookmarks",m_urls);
+}
+
+void MainWindow::LoadSettings()
+{
+    QSettings setting(QSettings::IniFormat,QSettings::UserScope,"TwitchLivestreamer");
+    m_username = setting.value("username").toString();
+    QString path = setting.value("VLCPath").toString();
+
+    if(path.isEmpty())
+    {
+#ifdef WIN32
+        ui->PathFile->setText("C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe");
+#else
+        ui->PathFile->setText("vlc");
+#endif
+    }
+    else
+    {
+        ui->PathFile->setText(path);
+    }
+
+    m_urls = setting.value("bookmarks").toStringList();
+    for(int i =0 ; i < m_urls.size();i++)
+    {
+        addBookmark(Bookmark(QUrl(m_urls[i])));
+    }
 }

@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <Qtcore>
+#include <QtCore>
 #include <QtWidgets>
 #include <QTimer>
 #include "bookmark.h"
@@ -22,7 +22,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 private:
-    void addBookmark(const Bookmark &bookmark, bool status);
+    void addBookmark(const Bookmark &bookmark);
 
     void removeBookmark(int index);
 
@@ -41,6 +41,10 @@ private:
     QUrl getStreamerName();
 
     void SortItems();
+
+    void SaveSettings();
+
+    void LoadSettings();
 
 private slots:
     void on_AddButton_clicked();
@@ -74,6 +78,10 @@ private:
     QList<QString> m_onlinePlayers_now;
 
     QTimer * m_activateTimer;
+
+    QString m_username;
+
+    QStringList m_urls;
 };
 
 #endif // MAINWINDOW_H
