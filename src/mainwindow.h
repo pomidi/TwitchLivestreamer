@@ -65,6 +65,9 @@ private slots:
 
     void on_BrowseButton_clicked();
 
+    void UpdateTimerText();
+
+
 private:
 
     Ui::TwitchStreamerApp *ui;
@@ -82,6 +85,8 @@ private:
     QString m_username;
 
     QStringList m_urls;
+
+    int m_timer;
 };
 
 #endif // MAINWINDOW_H

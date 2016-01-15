@@ -9,9 +9,10 @@ MainWindow::MainWindow(QWidget *parent) :
     m_activateTimer(new QTimer(this))
 {
    //timer settings
-   m_activateTimer->setInterval(60*1000);
+   m_activateTimer->setInterval(1000);
    m_activateTimer->setSingleShot(false);
    m_activateTimer->start();
+   m_timer = 0;
 
    ui->setupUi(this);
 #ifdef WIN32
@@ -24,12 +25,14 @@ MainWindow::MainWindow(QWidget *parent) :
    m_onlinePlayers_previous.clear();
    m_onlinePlayers_now.clear();
 
+
    //connect and slots definitions
    connect(m_download,SIGNAL(downloaded()),this,SLOT(capture()));
    connect(ui->actionAdd,SIGNAL(triggered()),this,SLOT(on_AddButton_clicked()));
    connect(ui->actionRemove,SIGNAL(triggered()),this,SLOT(on_RemoveButton_pressed()));
    connect(ui->treeWidget,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(on_WatchButotn_clicked()));
-   connect(m_activateTimer,SIGNAL(timeout()),this,SLOT(on_UpdateStatusButton_clicked()));
+   //connect(m_activateTimer,SIGNAL(timeout()),this,SLOT(on_UpdateStatusButton_clicked()));
+   connect(m_activateTimer,SIGNAL(timeout()),this,SLOT(UpdateTimerText()));
 }
 
 MainWindow::~MainWindow()
@@ -275,10 +278,12 @@ void MainWindow::RefreshStreams(QString link)
 
 void MainWindow::on_UpdateStatusButton_clicked()
 {
+    m_timer = 0;
     m_onlinePlayers_previous.clear();
     m_onlinePlayers_previous = m_onlinePlayers_now;
     m_onlinePlayers_now.clear();
     QString urlString("https://api.twitch.tv/kraken/streams/");
+    ui->UpdateStatusText->setText("Loading...");
     for(int index = 0; index < m_bookmarks.size();index++)
     {
         QTreeWidgetItem * item = ui->treeWidget->topLevelItem(index);
@@ -359,5 +364,17 @@ void MainWindow::LoadSettings()
     for(int i =0 ; i < m_urls.size();i++)
     {
         addBookmark(Bookmark(QUrl(m_urls[i])));
+    }
+    emit(on_UpdateStatusButton_clicked());
+}
+
+void MainWindow::UpdateTimerText()
+{
+    m_timer++;
+    QString time = QString::number(61-m_timer);
+    ui->UpdateStatusText->setText("updating the streams in " + time + " s");
+    if(m_timer == 60)
+    {
+        emit(on_UpdateStatusButton_clicked());
     }
 }
