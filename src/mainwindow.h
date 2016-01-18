@@ -46,6 +46,8 @@ private:
 
     void LoadSettings();
 
+    void UpdateIcon();
+
 private slots:
     void on_AddButton_clicked();
 
@@ -67,7 +69,9 @@ private slots:
 
     void UpdateTimerText();
 
+    void ShowWindow(QSystemTrayIcon::ActivationReason reason);
 
+    void WatchFromMenu(QAction* action);
 private:
 
     Ui::TwitchStreamerApp *ui;
@@ -82,11 +86,17 @@ private:
 
     QTimer * m_activateTimer;
 
+    QSystemTrayIcon * m_sysTray;
+
+    QMenu * m_menubar;
+
     QString m_username;
 
     QStringList m_urls;
 
     int m_timer;
+
+
 };
 
 #endif // MAINWINDOW_H

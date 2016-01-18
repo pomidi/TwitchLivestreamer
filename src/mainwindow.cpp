@@ -6,7 +6,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::TwitchStreamerApp),
     m_download(new Download(this)),
-    m_activateTimer(new QTimer(this))
+    m_activateTimer(new QTimer(this)),
+    m_sysTray(new QSystemTrayIcon(this)),
+    m_menubar(new QMenu(this))
 {
    //timer settings
    m_activateTimer->setInterval(1000);
@@ -25,6 +27,8 @@ MainWindow::MainWindow(QWidget *parent) :
    m_onlinePlayers_previous.clear();
    m_onlinePlayers_now.clear();
 
+   m_sysTray->setIcon(QIcon("://logo.png"));
+   m_sysTray->show();
 
    //connect and slots definitions
    connect(m_download,SIGNAL(downloaded()),this,SLOT(capture()));
@@ -33,6 +37,9 @@ MainWindow::MainWindow(QWidget *parent) :
    connect(ui->treeWidget,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(on_WatchButotn_clicked()));
    //connect(m_activateTimer,SIGNAL(timeout()),this,SLOT(on_UpdateStatusButton_clicked()));
    connect(m_activateTimer,SIGNAL(timeout()),this,SLOT(UpdateTimerText()));
+   connect(m_sysTray,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(ShowWindow(QSystemTrayIcon::ActivationReason)));
+   connect(m_menubar,SIGNAL(triggered(QAction*)),this,SLOT(WatchFromMenu(QAction*)));
+
 }
 
 MainWindow::~MainWindow()
@@ -41,6 +48,41 @@ MainWindow::~MainWindow()
     delete m_download;
     delete m_activateTimer;
     delete ui;
+    delete m_sysTray;
+}
+void MainWindow::WatchFromMenu(QAction* action)
+{
+    QUrl streamUrl = QUrl("http://twtich.tv/" + action->text());
+    QString player = ui->PathFile->text();
+    QString quality = ui->QualityBox->currentText();
+    watchStream(streamUrl,player,quality);
+}
+
+void MainWindow::ShowWindow(QSystemTrayIcon::ActivationReason reason)
+{
+    QList<QAction*> actions = m_menubar->actions();
+    foreach(QAction * action, actions){
+        m_menubar->removeAction(action);
+    }
+
+    for(int index = 0; index < m_bookmarks.size(); ++index)
+    {
+        QTreeWidgetItem * item = ui->treeWidget->topLevelItem(index);
+        for(int i = 0; i < m_onlinePlayers_now.size();i++)
+        {
+
+            if(item->text(0) == m_onlinePlayers_now[i])
+            {
+                QString viewers = item->text(2);
+                m_menubar->addAction(QIcon("://online.jpg"),m_onlinePlayers_now[i] + " (" + viewers+ " viewers)");
+            }
+        }
+    }
+    if(reason == QSystemTrayIcon::Trigger)
+    {
+        m_sysTray->setContextMenu(m_menubar);
+        m_sysTray->contextMenu()->popup(QCursor::pos());
+    }
 }
 
 void MainWindow::on_AddButton_clicked()
@@ -243,6 +285,7 @@ void MainWindow::UpdateStreamStatus(QJsonValue &StatusValue)
             }
         }
     }
+    UpdateIcon();
     SortItems();
 }
 
@@ -279,9 +322,12 @@ void MainWindow::RefreshStreams(QString link)
 void MainWindow::on_UpdateStatusButton_clicked()
 {
     m_timer = 0;
+    UpdateIcon();
+
     m_onlinePlayers_previous.clear();
     m_onlinePlayers_previous = m_onlinePlayers_now;
     m_onlinePlayers_now.clear();
+
     QString urlString("https://api.twitch.tv/kraken/streams/");
     ui->UpdateStatusText->setText("Loading...");
     for(int index = 0; index < m_bookmarks.size();index++)
@@ -314,7 +360,7 @@ void MainWindow::on_BrowseButton_clicked()
 {
     QString  fileName = QFileDialog::getOpenFileName(this);
     ui->PathFile->setText(fileName);
-    if(fileName == "")
+    if(fileName.isEmpty())
     {
 #ifdef WIN32
         ui->PathFile->setText("C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe");
@@ -333,6 +379,7 @@ void MainWindow::SaveSettings()
     setting.remove("username");
     setting.setValue("VLCPath",ui->PathFile->text());
     setting.setValue("username",m_username);
+    setting.setValue("LivestreamerPath",ui->LivestreamerPath->text());
     m_urls.clear();
     foreach(Bookmark bookmark,m_bookmarks){
         if(!m_urls.contains( bookmark.url().toString()))
@@ -365,6 +412,17 @@ void MainWindow::LoadSettings()
     {
         addBookmark(Bookmark(QUrl(m_urls[i])));
     }
+
+    QString livestreamerPath = setting.value("LivestreamerPath").toString();
+
+    if(livestreamerPath.isEmpty())
+    {
+        ui->LivestreamerPath->setText("livestreamer");
+    }
+    else
+    {
+        ui->LivestreamerPath->setText(livestreamerPath);
+    }
     emit(on_UpdateStatusButton_clicked());
 }
 
@@ -373,8 +431,20 @@ void MainWindow::UpdateTimerText()
     m_timer++;
     QString time = QString::number(61-m_timer);
     ui->UpdateStatusText->setText("updating the streams in " + time + " s");
+
     if(m_timer == 60)
     {
         emit(on_UpdateStatusButton_clicked());
     }
+}
+
+void MainWindow::UpdateIcon()
+{
+     int nPlayers = m_onlinePlayers_now.size();
+     if(nPlayers >= 9)
+     {
+         nPlayers = 9;
+     }
+     QString sPlayer = QString::number(nPlayers);
+     m_sysTray->setIcon(QIcon("://" + sPlayer + ".png"));
 }
