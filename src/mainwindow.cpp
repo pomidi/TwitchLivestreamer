@@ -88,7 +88,8 @@ void MainWindow::ShowWindow(QSystemTrayIcon::ActivationReason reason)
 void MainWindow::on_AddButton_clicked()
 {
     bool ok = false;
-    QString txt = QInputDialog::getText(this, "Add Stream", "Stream URL (i.e. http://twitch.tv/some-stream):", QLineEdit::Normal, "http://", &ok);
+    QString txt = QInputDialog::getText(this, "Add Stream", "Stream URL (i.e. http://twitch.tv/some-stream):", QLineEdit::Normal, "http://twitch.tv/", &ok);
+    txt = txt.toLower();
     if (ok && !txt.isEmpty())
     {
         Bookmark newBookmark = Bookmark(QUrl(txt));
@@ -337,6 +338,9 @@ void MainWindow::on_UpdateStatusButton_clicked()
         QUrl url = QUrl(urlString+urlNameString);
         m_download->DownloadFromUrl(url);
     }
+//    foreach(Bookmark bookmark,m_bookmarks){
+//        m_download->DownloadFromUrl(bookmark.url());
+//    }
 }
 
 void MainWindow::on_actionExit_triggered()
