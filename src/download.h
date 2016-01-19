@@ -9,6 +9,7 @@
 #include <QUrl>
 #include <QFile>
 #include <QBuffer>
+#include <QSsl>
 
 
 class Download : public QObject

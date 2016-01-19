@@ -52,7 +52,9 @@ MainWindow::~MainWindow()
 }
 void MainWindow::WatchFromMenu(QAction* action)
 {
-    QUrl streamUrl = QUrl("http://twtich.tv/" + action->text());
+    QString streamerPlusView = action->text();
+    QStringList streamer = streamerPlusView.split(" ");
+    QUrl streamUrl = QUrl("http://twitch.tv/" + streamer[0]);
     QString player = ui->PathFile->text();
     QString quality = ui->QualityBox->currentText();
     watchStream(streamUrl,player,quality);
@@ -148,6 +150,11 @@ void MainWindow::on_WatchButotn_clicked()
     QString player = ui->PathFile->text();
     QString quality = ui->QualityBox->currentText();
     QUrl url = QUrl("http://twitch.tv/"+PlayerName);
+    watchStream(url, player, quality);
+}
+
+void MainWindow::watchStream(const QUrl& url, const QString &player, const QString &quality)
+{
     if(player.isEmpty())
     {
         QMessageBox msgBox;
@@ -155,13 +162,16 @@ void MainWindow::on_WatchButotn_clicked()
         msgBox.exec();
         return;
     }
-    watchStream(url, player, quality);
-}
-
-void MainWindow::watchStream(const QUrl& url, const QString &player, const QString &quality)
-{
     QStringList args;
     args << url.toString() << quality << "--player" << player;
+    QString livestreamer;
+    if(ui->LivestreamerPath->text().isEmpty() ||  (ui->LivestreamerPath->text() == "livestreamer")){
+        livestreamer = "livestreamer";
+    }
+    else
+    {
+        livestreamer = ui->LivestreamerPath->text();
+    }
     if(!QProcess::startDetached("livestreamer", args))
     {
         QMessageBox msgBox;
@@ -338,9 +348,6 @@ void MainWindow::on_UpdateStatusButton_clicked()
         QUrl url = QUrl(urlString+urlNameString);
         m_download->DownloadFromUrl(url);
     }
-//    foreach(Bookmark bookmark,m_bookmarks){
-//        m_download->DownloadFromUrl(bookmark.url());
-//    }
 }
 
 void MainWindow::on_actionExit_triggered()
