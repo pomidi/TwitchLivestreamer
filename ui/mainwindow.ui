@@ -34,7 +34,7 @@
     <item row="6" column="0">
      <widget class="QLabel" name="label_3">
       <property name="text">
-       <string>path to livestreamer(if it is installed somewhere else)</string>
+       <string>path to livestreamer(if it is installed somewhere else). Leave it empty in case it is already in your %PATH</string>
       </property>
      </widget>
     </item>
@@ -62,7 +62,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="RefreshButton">
+         <widget class="QPushButton" name="GetStream">
           <property name="text">
            <string>Get Streams </string>
           </property>
@@ -287,7 +287,14 @@
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionGeneral_Setting"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuTools"/>
   </widget>
   <action name="actionAdd">
    <property name="text">
@@ -302,6 +309,11 @@
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionGeneral_Setting">
+   <property name="text">
+    <string>General Setting</string>
    </property>
   </action>
  </widget>

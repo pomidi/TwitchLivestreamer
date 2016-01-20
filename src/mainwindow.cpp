@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "qglobal.h"
 
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::TwitchStreamerApp),
@@ -15,8 +16,9 @@ MainWindow::MainWindow(QWidget *parent) :
    m_activateTimer->setSingleShot(false);
    m_activateTimer->start();
    m_timer = 0;
-
+   m_fromMenubar = false;
    ui->setupUi(this);
+
 #ifdef WIN32
    ui->PathFile->setText("C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe");
 #else
@@ -29,13 +31,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
    m_sysTray->setIcon(QIcon("://logo.png"));
    m_sysTray->show();
-
-   //connect and slots definitions
    connect(m_download,SIGNAL(downloaded()),this,SLOT(capture()));
    connect(ui->actionAdd,SIGNAL(triggered()),this,SLOT(on_AddButton_clicked()));
    connect(ui->actionRemove,SIGNAL(triggered()),this,SLOT(on_RemoveButton_pressed()));
    connect(ui->treeWidget,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(on_WatchButotn_clicked()));
-   //connect(m_activateTimer,SIGNAL(timeout()),this,SLOT(on_UpdateStatusButton_clicked()));
    connect(m_activateTimer,SIGNAL(timeout()),this,SLOT(UpdateTimerText()));
    connect(m_sysTray,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(ShowWindow(QSystemTrayIcon::ActivationReason)));
    connect(m_menubar,SIGNAL(triggered(QAction*)),this,SLOT(WatchFromMenu(QAction*)));
@@ -49,9 +48,48 @@ MainWindow::~MainWindow()
     delete m_activateTimer;
     delete ui;
     delete m_sysTray;
+
 }
+void MainWindow::closeEvent (QCloseEvent *event)
+{
+    if(m_fromMenubar)
+    {
+        m_fromMenubar = false;
+        this->close();
+    }
+    else
+    {
+        event->ignore();
+        this->hide();
+        m_sysTray->showMessage("Info","App is still running. If you want to close it, you should do it from the Menubar",QSystemTrayIcon::Information,2000);
+    }
+
+
+}
+
 void MainWindow::WatchFromMenu(QAction* action)
 {
+    if(action->text() == "Exit")
+    {
+        m_fromMenubar = true;
+        this->close();
+        return;
+    }
+    if(action->text() == "Add Stream")
+    {
+        emit(on_AddButton_clicked());
+        return;
+    }
+    if(action->text() == "Refresh")
+    {
+        emit(on_UpdateStatusButton_clicked());
+        return;
+    }
+    if(action->text() == "Show Application")
+    {
+        this->show();
+        return;
+    }
     QString streamerPlusView = action->text();
     QStringList streamer = streamerPlusView.split(" ");
     QUrl streamUrl = QUrl("http://twitch.tv/" + streamer[0]);
@@ -60,13 +98,19 @@ void MainWindow::WatchFromMenu(QAction* action)
     watchStream(streamUrl,player,quality);
 }
 
+void MainWindow::feedbackStream()
+{
+}
+
 void MainWindow::ShowWindow(QSystemTrayIcon::ActivationReason reason)
 {
     QList<QAction*> actions = m_menubar->actions();
     foreach(QAction * action, actions){
         m_menubar->removeAction(action);
     }
-
+    m_menubar->addAction(QIcon("://logo.png"),"Show Application");
+    m_menubar->addAction(QIcon("://refresh.png"),"Refresh");
+    m_menubar->addSeparator();
     for(int index = 0; index < m_bookmarks.size(); ++index)
     {
         QTreeWidgetItem * item = ui->treeWidget->topLevelItem(index);
@@ -80,6 +124,8 @@ void MainWindow::ShowWindow(QSystemTrayIcon::ActivationReason reason)
             }
         }
     }
+    m_menubar->addSeparator();
+    m_menubar->addAction(QIcon("://remove.png"),"Exit");
     if(reason == QSystemTrayIcon::Trigger)
     {
         m_sysTray->setContextMenu(m_menubar);
@@ -165,6 +211,7 @@ void MainWindow::watchStream(const QUrl& url, const QString &player, const QStri
     QStringList args;
     args << url.toString() << quality << "--player" << player;
     QString livestreamer;
+
     if(ui->LivestreamerPath->text().isEmpty() ||  (ui->LivestreamerPath->text() == "livestreamer")){
         livestreamer = "livestreamer";
     }
@@ -172,7 +219,7 @@ void MainWindow::watchStream(const QUrl& url, const QString &player, const QStri
     {
         livestreamer = ui->LivestreamerPath->text();
     }
-    if(!QProcess::startDetached("livestreamer", args))
+    if(!QProcess::startDetached(livestreamer, args))
     {
         QMessageBox msgBox;
         msgBox.setText("Could not find livestreamer on your computer.\n");
@@ -180,7 +227,7 @@ void MainWindow::watchStream(const QUrl& url, const QString &player, const QStri
     }
 }
 
-void MainWindow::on_RefreshButton_clicked()
+void MainWindow::on_GetStream_clicked()
 {
     //"https://api.twitch.tv/kraken/users/0midd/follows/channels"
     QString link_1 = "https://api.twitch.tv/kraken/users/";
@@ -216,22 +263,14 @@ void MainWindow::capture()
         QJsonValue ViewerValue = StatusObject["viewers"];
         UpdateStreamStatus(StatusValue);
         UpdateViewerStatus(ViewerValue,StatusValue);
+        return;
     }
-    else if(dataType == DataType::Subscrition)
+    if(dataType == DataType::Subscrition)
     {
         QJsonValue ValueFollow = jsonObject["follows"];
         QJsonArray array = ValueFollow.toArray();
         UpdateSubscriptionList(array);
-    }
-    else if(dataType == DataType::Error)
-    {
-//        QMessageBox msgBox;
-//        msgBox.setText("An Error occured getting one or more streamer's information\n");
-//        msgBox.exec();
-    }
-    else
-    {
-        //do nothing
+        return;
     }
 }
 
@@ -383,7 +422,6 @@ void MainWindow::on_BrowseButton_clicked()
 
 void MainWindow::SaveSettings()
 {
-
     QSettings setting(QSettings::IniFormat,QSettings::UserScope,"TwitchLivestreamer");
     setting.remove("bookmarks");
     setting.remove("VLCPath");

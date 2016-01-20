@@ -22,6 +22,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 private:
+    void closeEvent (QCloseEvent *event);
     void addBookmark(const Bookmark &bookmark);
 
     void removeBookmark(int index);
@@ -55,7 +56,7 @@ private slots:
 
     void on_WatchButotn_clicked();
 
-    void on_RefreshButton_clicked();
+    void on_GetStream_clicked();
 
     void capture();
 
@@ -72,6 +73,9 @@ private slots:
     void ShowWindow(QSystemTrayIcon::ActivationReason reason);
 
     void WatchFromMenu(QAction* action);
+
+    void feedbackStream();
+
 private:
 
     Ui::TwitchStreamerApp *ui;
@@ -96,6 +100,7 @@ private:
 
     int m_timer;
 
+    bool m_fromMenubar;
 
 };
 
