@@ -44,7 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
    connect(m_dialog,SIGNAL(CloseDialog()),this,SLOT(RealClose()));
    connect(m_dialog,SIGNAL(RefreshDialog()),this,SLOT(on_UpdateStatusButton_clicked()));
    connect(m_dialog,SIGNAL(OpenStream(QString)),this,SLOT(WatchFromMenu(QString)));
-   connect(m_dialog,SIGNAL(ShowMainWindow()),this,SLOT(show()));
+   connect(m_dialog,SIGNAL(ShowMainWindow()),this,SLOT(showNormal()));
 }
 
 MainWindow::~MainWindow()
