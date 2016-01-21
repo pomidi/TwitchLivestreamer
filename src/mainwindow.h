@@ -80,6 +80,8 @@ private slots:
 
     void updateDialogContent();
 
+    void Show();
+
 private:
 
     Ui::TwitchStreamerApp *ui;
