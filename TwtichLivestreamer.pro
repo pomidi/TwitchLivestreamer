@@ -18,15 +18,18 @@ SOURCES +=  \
             src/main.cpp \
             src/mainwindow.cpp \
             src/download.cpp \
-            src/bookmark.cpp
+            src/bookmark.cpp \
+            src/systemtraydialog.cpp
 
 HEADERS  += \
             src/mainwindow.h \
             src/download.h \
-            src/bookmark.h
+            src/bookmark.h \
+            src/systemtraydialog.h
 
 FORMS    += \
-            ui/mainwindow.ui
+            ui/mainwindow.ui \
+    systemtraydialog.ui
 
 RESOURCES += \
             images/resources.qrc

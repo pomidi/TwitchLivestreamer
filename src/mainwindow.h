@@ -7,6 +7,7 @@
 #include <QTimer>
 #include "bookmark.h"
 #include "download.h"
+#include "systemtraydialog.h"
 
 namespace Ui {
 class TwitchStreamerApp;
@@ -23,6 +24,7 @@ public:
     ~MainWindow();
 private:
     void closeEvent (QCloseEvent *event);
+
     void addBookmark(const Bookmark &bookmark);
 
     void removeBookmark(int index);
@@ -72,9 +74,11 @@ private slots:
 
     void ShowWindow(QSystemTrayIcon::ActivationReason reason);
 
-    void WatchFromMenu(QAction* action);
+    void WatchFromMenu(QString stream);
 
-    void feedbackStream();
+    void RealClose();
+
+    void updateDialogContent();
 
 private:
 
@@ -101,6 +105,8 @@ private:
     int m_timer;
 
     bool m_fromMenubar;
+
+    SystemTrayDialog * m_dialog;
 
 };
 

@@ -2,14 +2,14 @@
 #include "ui_mainwindow.h"
 #include "qglobal.h"
 
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::TwitchStreamerApp),
     m_download(new Download(this)),
     m_activateTimer(new QTimer(this)),
     m_sysTray(new QSystemTrayIcon(this)),
-    m_menubar(new QMenu(this))
+    m_menubar(new QMenu(this)),
+    m_dialog(new SystemTrayDialog(this))
 {
    //timer settings
    m_activateTimer->setInterval(1000);
@@ -31,14 +31,20 @@ MainWindow::MainWindow(QWidget *parent) :
 
    m_sysTray->setIcon(QIcon("://logo.png"));
    m_sysTray->show();
+
+   m_dialog->setModal(true);
+
+   m_dialog->setWindowFlags(Qt::FramelessWindowHint | Qt::Popup);
    connect(m_download,SIGNAL(downloaded()),this,SLOT(capture()));
    connect(ui->actionAdd,SIGNAL(triggered()),this,SLOT(on_AddButton_clicked()));
    connect(ui->actionRemove,SIGNAL(triggered()),this,SLOT(on_RemoveButton_pressed()));
    connect(ui->treeWidget,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(on_WatchButotn_clicked()));
    connect(m_activateTimer,SIGNAL(timeout()),this,SLOT(UpdateTimerText()));
    connect(m_sysTray,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(ShowWindow(QSystemTrayIcon::ActivationReason)));
-   connect(m_menubar,SIGNAL(triggered(QAction*)),this,SLOT(WatchFromMenu(QAction*)));
-
+   connect(m_dialog,SIGNAL(CloseDialog()),this,SLOT(RealClose()));
+   connect(m_dialog,SIGNAL(RefreshDialog()),this,SLOT(on_UpdateStatusButton_clicked()));
+   connect(m_dialog,SIGNAL(OpenStream(QString)),this,SLOT(WatchFromMenu(QString)));
+   connect(m_dialog,SIGNAL(ShowMainWindow()),this,SLOT(show()));
 }
 
 MainWindow::~MainWindow()
@@ -50,12 +56,20 @@ MainWindow::~MainWindow()
     delete m_sysTray;
 
 }
+
+void MainWindow::RealClose()
+{
+    m_fromMenubar = true;
+    this->close();
+}
+
 void MainWindow::closeEvent (QCloseEvent *event)
 {
+
     if(m_fromMenubar)
     {
         m_fromMenubar = false;
-        this->close();
+        event->accept();
     }
     else
     {
@@ -67,69 +81,34 @@ void MainWindow::closeEvent (QCloseEvent *event)
 
 }
 
-void MainWindow::WatchFromMenu(QAction* action)
+void MainWindow::WatchFromMenu(QString stream)
 {
-    if(action->text() == "Exit")
-    {
-        m_fromMenubar = true;
-        this->close();
-        return;
-    }
-    if(action->text() == "Add Stream")
-    {
-        emit(on_AddButton_clicked());
-        return;
-    }
-    if(action->text() == "Refresh")
-    {
-        emit(on_UpdateStatusButton_clicked());
-        return;
-    }
-    if(action->text() == "Show Application")
-    {
-        this->show();
-        return;
-    }
-    QString streamerPlusView = action->text();
-    QStringList streamer = streamerPlusView.split(" ");
-    QUrl streamUrl = QUrl("http://twitch.tv/" + streamer[0]);
+    QUrl streamUrl = QUrl("http://twitch.tv/" + stream);
     QString player = ui->PathFile->text();
     QString quality = ui->QualityBox->currentText();
     watchStream(streamUrl,player,quality);
 }
 
-void MainWindow::feedbackStream()
+void MainWindow::ShowWindow(QSystemTrayIcon::ActivationReason)
 {
+    QRect rect = m_dialog->newGeometry(m_sysTray->geometry());
+    m_dialog->setGeometry(rect);
+    m_dialog->show();
+    m_dialog->activateWindow();
+    updateDialogContent();
+
 }
 
-void MainWindow::ShowWindow(QSystemTrayIcon::ActivationReason reason)
+void MainWindow::updateDialogContent()
 {
-    QList<QAction*> actions = m_menubar->actions();
-    foreach(QAction * action, actions){
-        m_menubar->removeAction(action);
-    }
-    m_menubar->addAction(QIcon("://logo.png"),"Show Application");
-    m_menubar->addAction(QIcon("://refresh.png"),"Refresh");
-    m_menubar->addSeparator();
-    for(int index = 0; index < m_bookmarks.size(); ++index)
+    m_dialog->InitializeTree();
+    for(int index = 0; index < m_bookmarks.size();++index)
     {
-        QTreeWidgetItem * item = ui->treeWidget->topLevelItem(index);
-        for(int i = 0; i < m_onlinePlayers_now.size();i++)
-        {
-
-            if(item->text(0) == m_onlinePlayers_now[i])
-            {
-                QString viewers = item->text(2);
-                m_menubar->addAction(QIcon("://online.jpg"),m_onlinePlayers_now[i] + " (" + viewers+ " viewers)");
-            }
-        }
-    }
-    m_menubar->addSeparator();
-    m_menubar->addAction(QIcon("://remove.png"),"Exit");
-    if(reason == QSystemTrayIcon::Trigger)
-    {
-        m_sysTray->setContextMenu(m_menubar);
-        m_sysTray->contextMenu()->popup(QCursor::pos());
+       QTreeWidgetItem * item = ui->treeWidget->topLevelItem(index);
+       if(m_onlinePlayers_now.contains(item->text(0)))
+       {
+            m_dialog->AddtoTree(item->text(0),item->text(2));
+       }
     }
 }
 
@@ -229,7 +208,6 @@ void MainWindow::watchStream(const QUrl& url, const QString &player, const QStri
 
 void MainWindow::on_GetStream_clicked()
 {
-    //"https://api.twitch.tv/kraken/users/0midd/follows/channels"
     QString link_1 = "https://api.twitch.tv/kraken/users/";
     QString player;
     if(m_username.isEmpty())
@@ -316,7 +294,8 @@ void MainWindow::UpdateStreamStatus(QJsonValue &StatusValue)
     QJsonObject statusObject = StatusValue.toObject();
     QJsonValue arrayValue = statusObject["name"];
     QString name = arrayValue.toString();
-    m_onlinePlayers_now << name;
+    if(!m_onlinePlayers_now.contains(name))
+        m_onlinePlayers_now << name;
     for(int index = 0; index < m_bookmarks.size(); ++index)
     {
         QTreeWidgetItem * item = ui->treeWidget->topLevelItem(index);
@@ -353,6 +332,7 @@ void MainWindow::UpdateViewerStatus(QJsonValue &ViewerValue,QJsonValue &StatusVa
             item->setText(2,viewer);
         }
     }
+    updateDialogContent();
 }
 
 void MainWindow::SortItems()
