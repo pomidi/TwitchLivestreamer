@@ -48,9 +48,13 @@ void SystemTrayDialog::AddtoTree(const QString& stream,const QString& viewers)
     QTreeWidgetItem * item = new QTreeWidgetItem((QTreeWidget*)0);
     item->setText(0,stream);
     item->setText(1,viewers);
+    item->setIcon(0,QIcon("://online_streamer.svg"));
+    item->setIcon(1,QIcon("://people.svg"));
     ui->treeWidget->addTopLevelItem(item);
+    SortItemsBasedOnViewers();
     ui->treeWidget->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     ui->treeWidget->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+
 }
 
 void SystemTrayDialog::InitializeTree()
@@ -95,4 +99,9 @@ void SystemTrayDialog::on_AddBtn_clicked()
 {
     this->hide();
     emit ShowMainWindow();
+}
+
+void SystemTrayDialog::SortItemsBasedOnViewers()
+{
+    ui->treeWidget->sortItems(1,Qt::SortOrder::AscendingOrder);
 }

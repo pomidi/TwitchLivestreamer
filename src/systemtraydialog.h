@@ -43,6 +43,8 @@ private slots:
 
     void on_AddBtn_clicked();
 
+    void SortItemsBasedOnViewers();
+
 private:
 
     Ui::SystemTrayDialog *ui;

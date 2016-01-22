@@ -317,8 +317,9 @@ void MainWindow::UpdateStreamStatus(QJsonValue &StatusValue)
         QTreeWidgetItem * item = ui->treeWidget->topLevelItem(index);
         if(item->text(0) == name)
         {
-            item->setText(1,"Live!");
+            item->setText(1,"Live");
             item->setIcon(1,m_bookmarks[index].StatusIcon(true));
+            item->setIcon(2,QIcon("://people.svg"));
         }
         else
         {

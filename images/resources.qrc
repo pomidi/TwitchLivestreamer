@@ -1,13 +1,14 @@
 <RCC>
     <qresource prefix="/">
         <file>add.png</file>
-        <file>offline.png</file>
-        <file>online.jpg</file>
         <file>play.png</file>
         <file>refresh.png</file>
         <file>remove.png</file>
-        <file>logo.png</file>
-        <file>0.png</file>
+        <file>online_streamer.svg</file>
+        <file>people.svg</file>
+        <file>online.png</file>
+        <file>offline.png</file>
+        <file>online.jpg</file>
         <file>1.png</file>
         <file>2.png</file>
         <file>3.png</file>
@@ -17,5 +18,7 @@
         <file>7.png</file>
         <file>8.png</file>
         <file>9.png</file>
+        <file>0.png</file>
+        <file>logo.png</file>
     </qresource>
 </RCC>

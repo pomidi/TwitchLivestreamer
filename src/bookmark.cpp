@@ -29,7 +29,7 @@ QIcon Bookmark::StatusIcon(bool status) const
 {
     if(status)
     {
-        return QIcon(":/online.jpg");
+        return QIcon(":/online.png");
     }
     else
     {
