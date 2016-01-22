@@ -57,6 +57,7 @@ MainWindow::~MainWindow()
 
 }
 
+
 void MainWindow::RealClose()
 {
     m_fromMenubar = true;
@@ -93,8 +94,17 @@ void MainWindow::ShowWindow(QSystemTrayIcon::ActivationReason)
 {
     QRect rect = m_dialog->newGeometry(m_sysTray->geometry());
     m_dialog->setGeometry(rect);
-    m_dialog->show();
-    m_dialog->activateWindow();
+    if(m_dialog->isActiveWindow())
+    {
+        m_dialog->hide();
+    }
+    else
+    {
+         m_dialog->show();
+         m_dialog->activateWindow();
+    }
+
+
     updateDialogContent();
 
 }

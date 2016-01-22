@@ -25,14 +25,38 @@
      <height>171</height>
     </rect>
    </property>
+   <property name="indentation">
+    <number>20</number>
+   </property>
+   <property name="columnCount">
+    <number>2</number>
+   </property>
+   <attribute name="headerCascadingSectionResizes">
+    <bool>false</bool>
+   </attribute>
+   <attribute name="headerDefaultSectionSize">
+    <number>63</number>
+   </attribute>
+   <attribute name="headerHighlightSections">
+    <bool>false</bool>
+   </attribute>
+   <attribute name="headerMinimumSectionSize">
+    <number>21</number>
+   </attribute>
+   <attribute name="headerShowSortIndicator" stdset="0">
+    <bool>false</bool>
+   </attribute>
    <column>
     <property name="text">
      <string>Streams</string>
     </property>
+    <property name="textAlignment">
+     <set>AlignLeading|AlignTop</set>
+    </property>
    </column>
    <column>
     <property name="text">
-     <string>Viewers</string>
+     <string>view</string>
     </property>
    </column>
   </widget>
@@ -53,65 +77,35 @@
      <normaloff>:/refresh.png</normaloff>:/refresh.png</iconset>
    </property>
   </widget>
-  <widget class="QWidget" name="layoutWidget">
+  <widget class="QPushButton" name="AddBtn">
    <property name="geometry">
     <rect>
-     <x>50</x>
+     <x>60</x>
      <y>180</y>
-     <width>170</width>
-     <height>26</height>
+     <width>89</width>
+     <height>23</height>
     </rect>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <widget class="QPushButton" name="AddBtn">
-      <property name="text">
-       <string>Open</string>
-      </property>
-      <property name="icon">
-       <iconset resource="images/resources.qrc">
-        <normaloff>:/logo.png</normaloff>:/logo.png</iconset>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <spacer name="horizontalSpacer_2">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item>
-     <spacer name="horizontalSpacer">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item>
-     <widget class="QPushButton" name="ExitBtn">
-      <property name="text">
-       <string>Quit</string>
-      </property>
-      <property name="icon">
-       <iconset resource="images/resources.qrc">
-        <normaloff>:/remove.png</normaloff>:/remove.png</iconset>
-      </property>
-     </widget>
-    </item>
-   </layout>
+   <property name="text">
+    <string>Open Application</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="ExitBtn">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>180</y>
+     <width>61</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Quit</string>
+   </property>
+   <property name="icon">
+    <iconset resource="images/resources.qrc">
+     <normaloff>:/remove.png</normaloff>:/remove.png</iconset>
+   </property>
   </widget>
  </widget>
  <resources>

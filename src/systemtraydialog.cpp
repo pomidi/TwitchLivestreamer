@@ -9,6 +9,8 @@ SystemTrayDialog::SystemTrayDialog(QWidget *parent) :
     ui(new Ui::SystemTrayDialog)
 {
     ui->setupUi(this);
+
+
     connect(ui->treeWidget,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(ConnectToMainWindow()));
 }
 
@@ -30,13 +32,14 @@ QRect SystemTrayDialog::newGeometry(const QRect& sysTrayGeo)
     x1 = x + (trayWidth/2) - (width/2);
     if( y > screenHeight/2)
     {
+
         y-=10;
         y1 = y-height;
         y2 = y -1;
-        //icon is on bottom
     }
     else
     {
+        //icon is on top
         y +=trayHeight;
         y1 = y;//+height;
         y2 = y1+height;
@@ -52,14 +55,16 @@ void SystemTrayDialog::AddtoTree(const QString& stream,const QString& viewers)
     QTreeWidgetItem * item = new QTreeWidgetItem((QTreeWidget*)0);
     item->setText(0,stream);
     item->setText(1,viewers);
-    item->setIcon(0,QIcon("://online.jpg"));
     ui->treeWidget->addTopLevelItem(item);
+    ui->treeWidget->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    ui->treeWidget->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
 }
 
 void SystemTrayDialog::InitializeTree()
 {
     ui->treeWidget->clear();
     m_streamers.clear();
+
 }
 
 void SystemTrayDialog::closeEvent(QCloseEvent *event)
@@ -84,6 +89,7 @@ void SystemTrayDialog::on_RefreshBtn_clicked()
 void SystemTrayDialog::ConnectToMainWindow()
 {
     QModelIndexList indexes = ui->treeWidget->selectionModel()->selectedRows();
+    this->hide();
     emit OpenStream(indexes[0].data(Qt::DisplayRole).toString());
 }
 
@@ -94,5 +100,6 @@ void SystemTrayDialog::on_ExitBtn_clicked()
 
 void SystemTrayDialog::on_AddBtn_clicked()
 {
+    this->hide();
     emit ShowMainWindow();
 }
