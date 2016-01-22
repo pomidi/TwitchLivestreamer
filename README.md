@@ -14,7 +14,7 @@ Windows : you can download the setup.rar file to install.
 Linux/IOS : Compile the code with Qt 5.0 or higher
 
 
-#Example
+#Screenshot
 
 
 [Livestreamer]: <https://github.com/chrippa/livestreamer>
