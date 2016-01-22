@@ -9,43 +9,36 @@ SystemTrayDialog::SystemTrayDialog(QWidget *parent) :
     ui(new Ui::SystemTrayDialog)
 {
     ui->setupUi(this);
-
-
     connect(ui->treeWidget,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(ConnectToMainWindow()));
 }
 
 QRect SystemTrayDialog::newGeometry(const QRect& sysTrayGeo)
 {
-    QRect ScreenGeometry = QApplication::desktop()->screenGeometry();
-    int screenHeight = ScreenGeometry.height();
-    int x = 0,y = 0;
-    int trayWidth = 0 , trayHeight = 0;
-    sysTrayGeo.getCoords(&x, &y, &trayWidth, &trayHeight);
+    int screenHeight = QApplication::desktop()->screenGeometry().height();
+    int x1_sysTray = 0, y1_sysTray = 0, x2_sysTray = 0 , y2_sysTray = 0;
+    int x1_menubar= 0,y1_menubar =0, x2_menubar = 0, y2_menubar = 0;
+    int TrayWidth = x2_sysTray -x1_sysTray;
 
-    int width = this->width();
-    int height = this->height();
+    sysTrayGeo.getCoords(&x1_sysTray, &y1_sysTray, &x2_sysTray, &y2_sysTray);
+
+    x1_menubar = x1_sysTray + (TrayWidth / 2) - (this->width() / 2);
+    x2_menubar = x1_menubar + this->width() - 1;
+
+    if( y1_sysTray > (screenHeight / 2) )   //icon is on bottom
+    {
+        y1_sysTray-=10;
+        y1_menubar = y1_sysTray - this->height();
+        y2_menubar = y1_sysTray -1;
+    }
+    else    //icon is on top
+    {
+        y1_sysTray +=y2_sysTray;
+        y1_menubar = y1_sysTray;
+        y2_menubar = y1_menubar + this->height();
+    }
 
     QRect newRect;
-    int x1= 0,y1 =0, y2 = 0;
-    trayWidth -= x;
-
-    x1 = x + (trayWidth/2) - (width/2);
-    if( y > screenHeight/2)
-    {
-
-        y-=10;
-        y1 = y-height;
-        y2 = y -1;
-    }
-    else
-    {
-        //icon is on top
-        y +=trayHeight;
-        y1 = y;//+height;
-        y2 = y1+height;
-    }
-
-    newRect.setCoords( x1 ,y1, x1 + width-1,y2);
+    newRect.setCoords( x1_menubar ,y1_menubar, x2_menubar,y2_menubar);
     return newRect;
 }
 

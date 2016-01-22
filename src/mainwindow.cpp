@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
    m_activateTimer->start();
    m_timer = 0;
    m_fromMenubar = false;
+   m_enable_notifications = true;
    ui->setupUi(this);
 
 #ifdef WIN32
@@ -76,7 +77,8 @@ void MainWindow::closeEvent (QCloseEvent *event)
     {
         event->ignore();
         this->hide();
-        m_sysTray->showMessage("Info","App is still running. If you want to close it, you should do it from the Menubar",QSystemTrayIcon::Information,2000);
+        if(m_enable_notifications)
+            m_sysTray->showMessage("Info","App is still running. If you want to close it, you should do it from the Menubar",QSystemTrayIcon::Information,2000);
     }
 
 
@@ -104,9 +106,7 @@ void MainWindow::ShowWindow(QSystemTrayIcon::ActivationReason)
          m_dialog->activateWindow();
     }
 
-
     updateDialogContent();
-
 }
 
 void MainWindow::updateDialogContent()
@@ -419,17 +419,30 @@ void MainWindow::on_BrowseButton_clicked()
 void MainWindow::SaveSettings()
 {
     QSettings setting(QSettings::IniFormat,QSettings::UserScope,"TwitchLivestreamer");
+
     setting.remove("bookmarks");
     setting.remove("VLCPath");
     setting.remove("username");
+    setting.remove("Enable_notification");
     setting.setValue("VLCPath",ui->PathFile->text());
     setting.setValue("username",m_username);
     setting.setValue("LivestreamerPath",ui->LivestreamerPath->text());
+    if(ui->NotificationCheck->isChecked())
+    {
+        setting.setValue("Enable_notification","true");
+    }
+    else
+    {
+        setting.setValue("Enable_notification","false");
+    }
+
     m_urls.clear();
+
     foreach(Bookmark bookmark,m_bookmarks){
         if(!m_urls.contains( bookmark.url().toString()))
             m_urls << bookmark.url().toString();
     }
+
     setting.setValue("bookmarks",m_urls);
 }
 
@@ -438,6 +451,16 @@ void MainWindow::LoadSettings()
     QSettings setting(QSettings::IniFormat,QSettings::UserScope,"TwitchLivestreamer");
     m_username = setting.value("username").toString();
     QString path = setting.value("VLCPath").toString();
+    if(setting.value("Enable_notification").toString() == "true")
+    {
+        ui->NotificationCheck->setChecked(true);
+        m_enable_notifications = false;
+    }
+    else
+    {
+        ui->NotificationCheck->setChecked(false);
+        m_enable_notifications = true;
+    }
 
     if(path.isEmpty())
     {
@@ -453,6 +476,7 @@ void MainWindow::LoadSettings()
     }
 
     m_urls = setting.value("bookmarks").toStringList();
+
     for(int i =0 ; i < m_urls.size();i++)
     {
         addBookmark(Bookmark(QUrl(m_urls[i])));
@@ -468,7 +492,8 @@ void MainWindow::LoadSettings()
     {
         ui->LivestreamerPath->setText(livestreamerPath);
     }
-    emit(on_UpdateStatusButton_clicked());
+
+    on_UpdateStatusButton_clicked();
 }
 
 void MainWindow::UpdateTimerText()
@@ -479,7 +504,7 @@ void MainWindow::UpdateTimerText()
 
     if(m_timer == 60)
     {
-        emit(on_UpdateStatusButton_clicked());
+        on_UpdateStatusButton_clicked();
     }
 }
 
@@ -492,4 +517,16 @@ void MainWindow::UpdateIcon()
      }
      QString sPlayer = QString::number(nPlayers);
      m_sysTray->setIcon(QIcon("://" + sPlayer + ".png"));
+}
+
+void MainWindow::on_NotificationCheck_clicked(bool checked)
+{
+    if(checked)
+    {
+        m_enable_notifications = false;
+    }
+    else
+    {
+        m_enable_notifications = true;
+    }
 }

@@ -82,6 +82,8 @@ private slots:
 
     void Show();
 
+    void on_NotificationCheck_clicked(bool checked);
+
 private:
 
     Ui::TwitchStreamerApp *ui;
@@ -107,6 +109,8 @@ private:
     int m_timer;
 
     bool m_fromMenubar;
+
+    bool m_enable_notifications;
 
     SystemTrayDialog * m_dialog;
 

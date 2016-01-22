@@ -28,102 +28,6 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="7" column="0">
-     <widget class="QLineEdit" name="LivestreamerPath"/>
-    </item>
-    <item row="6" column="0">
-     <widget class="QLabel" name="label_3">
-      <property name="text">
-       <string>path to livestreamer(if it is installed somewhere else). Leave it empty in case it is already in your %PATH</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <widget class="Line" name="line_2">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_4">
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QPushButton" name="UpdateStatusButton">
-          <property name="text">
-           <string/>
-          </property>
-          <property name="icon">
-           <iconset theme=":/refresh.jpg">
-            <normaloff>refresh.png</normaloff>
-            <normalon>:/refresh.png</normalon>refresh.png</iconset>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="GetStream">
-          <property name="text">
-           <string>Get Streams </string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="checkBox">
-          <property name="text">
-           <string>Hide Offline Players</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <item>
-         <widget class="QPushButton" name="AddButton">
-          <property name="text">
-           <string/>
-          </property>
-          <property name="icon">
-           <iconset>
-            <normalon>:/add.png</normalon>
-           </iconset>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <widget class="QPushButton" name="RemoveButton">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset>
-              <normalon>:/remove.png</normalon>
-             </iconset>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </item>
     <item row="4" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_5">
       <item>
@@ -253,6 +157,13 @@
       </column>
      </widget>
     </item>
+    <item row="5" column="0">
+     <widget class="Line" name="line_3">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
     <item row="8" column="0">
      <widget class="QLabel" name="UpdateStatusText">
       <property name="text">
@@ -260,8 +171,104 @@
       </property>
      </widget>
     </item>
-    <item row="5" column="0">
-     <widget class="Line" name="line_3">
+    <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QPushButton" name="UpdateStatusButton">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset theme=":/refresh.jpg">
+            <normaloff>refresh.png</normaloff>
+            <normalon>:/refresh.png</normalon>refresh.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="GetStream">
+          <property name="text">
+           <string>Get Streams </string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox">
+          <property name="text">
+           <string>Hide Offline Players</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="NotificationCheck">
+        <property name="text">
+         <string>Disable Notifications</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QPushButton" name="AddButton">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normalon>:/add.png</normalon>
+           </iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QPushButton" name="RemoveButton">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normalon>:/remove.png</normalon>
+             </iconset>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item row="7" column="0">
+     <widget class="QLineEdit" name="LivestreamerPath"/>
+    </item>
+    <item row="6" column="0">
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>path to livestreamer(if it is installed somewhere else). Leave it empty in case it is already in your %PATH</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="Line" name="line_2">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>

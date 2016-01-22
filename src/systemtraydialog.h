@@ -13,19 +13,30 @@ class SystemTrayDialog : public QDialog
 
 public:
     explicit SystemTrayDialog(QWidget *parent = 0);
+
     QRect newGeometry(const QRect &sysTrayGeo);
+
     void AddtoTree(const QString &stream, const QString &viewers);
+
     void InitializeTree();
+
     void closeEvent (QCloseEvent *event);
+
     ~SystemTrayDialog();
+
 signals:
     void CloseDialog();
+
     void RefreshDialog();
+
     void OpenStream(QString);
+
     void ShowMainWindow();
 
 private slots:
+
     void on_RefreshBtn_clicked();
+
     void ConnectToMainWindow();
 
     void on_ExitBtn_clicked();
@@ -33,7 +44,9 @@ private slots:
     void on_AddBtn_clicked();
 
 private:
+
     Ui::SystemTrayDialog *ui;
+
     QStringList m_streamers;
 };
 
