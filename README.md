@@ -6,6 +6,7 @@ There is no Log-in required and by only typing in your twitch ID, the program is
 
 This Applicatoin is inspired by [qLiveStreamer] and is made using Qt5.5.
 
+
 #Important Notes
 You need to have [livestreamer] to run this App.
 
